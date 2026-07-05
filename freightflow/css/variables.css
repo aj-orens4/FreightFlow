@@ -1,9 +1,3 @@
-/*
-  Purpose: Design tokens (colors, type, spacing, radii, shadows, motion) for FreightFlow
-  Author: FreightFlow Engineering
-  Version: 0.1.0
-  Last Updated: 2026-07-04
-*/
 
 :root {
   /* ---- Brand palette ---- */
@@ -19,7 +13,7 @@
   --color-bg-dark: #0F172A;
   --color-card: #FFFFFF;
 
-  /* ---- Neutrals (derived, for text/borders) ---- */
+  /* ---- Neutrals (colors) ---- */
   --color-ink-900: #0F172A;
   --color-ink-700: #334155;
   --color-ink-500: #64748B;
