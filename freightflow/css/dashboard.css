@@ -1,10 +1,3 @@
-/*
-  Purpose: Dashboard-specific widget styles
-  Author: FreightFlow Engineering
-  Version: 0.1.0
-  Last Updated: 2026-07-04
-*/
-
 .widget-card {
   padding: var(--space-6);
 }
