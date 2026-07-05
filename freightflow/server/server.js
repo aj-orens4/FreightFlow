@@ -1,11 +1,3 @@
-/*
-  Purpose: Entry point. Serves the FreightFlow frontend as static files and exposes
-           the REST API under /api/*. Run with: npm start (from inside /server)
-  Author: FreightFlow Engineering
-  Version: 0.1.0
-  Last Updated: 2026-07-05
-*/
-
 const path = require("path");
 const express = require("express");
 const session = require("express-session");
@@ -27,18 +19,17 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days 'to
   }
 }));
 
-// ---- API routes ----
+// ---- mga API routes ----
 app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/shipments", shipmentRoutes);
 
-// ---- Static frontend (the folder one level up: index.html, dashboard.html, css/, js/) ----
 const publicDir = path.join(__dirname, "..");
 app.use(express.static(publicDir));
 
