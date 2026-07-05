@@ -1,0 +1,347 @@
+<!--
+  Purpose: FreightFlow main dashboard - app shell reference implementation
+  Author: FreightFlow Engineering
+  Version: 0.1.0
+  Last Updated: 2026-07-04
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · FreightFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/utilities.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div class="app-shell" data-sidebar="expanded" data-sidebar-mobile="closed">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-mark">FF</div>
+      <span class="sidebar__brand-name">FreightFlow</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <span class="sidebar__section-title">Overview</span>
+      <a href="dashboard.html" class="nav__item">
+        <i class="bi bi-grid-1x2-fill"></i><span class="nav__label">Dashboard</span>
+      </a>
+
+      <span class="sidebar__section-title">Operations</span>
+      <a href="shipments.html" class="nav__item">
+        <i class="bi bi-box-seam-fill"></i><span class="nav__label">Shipments</span>
+      </a>
+      <a href="routes.html" class="nav__item">
+        <i class="bi bi-signpost-2-fill"></i><span class="nav__label">Routes</span>
+      </a>
+      <a href="schedules.html" class="nav__item">
+        <i class="bi bi-calendar-week-fill"></i><span class="nav__label">Schedules</span>
+      </a>
+      <a href="tariffs.html" class="nav__item">
+        <i class="bi bi-calculator-fill"></i><span class="nav__label">Tariffs</span>
+      </a>
+
+      <span class="sidebar__section-title">Resources</span>
+      <a href="vehicles.html" class="nav__item">
+        <i class="bi bi-truck"></i><span class="nav__label">Vehicles</span>
+      </a>
+      <a href="drivers.html" class="nav__item">
+        <i class="bi bi-person-badge-fill"></i><span class="nav__label">Drivers</span>
+      </a>
+      <a href="customers.html" class="nav__item">
+        <i class="bi bi-people-fill"></i><span class="nav__label">Customers</span>
+      </a>
+      <a href="providers.html" class="nav__item">
+        <i class="bi bi-diagram-3-fill"></i><span class="nav__label">Providers</span>
+      </a>
+
+      <span class="sidebar__section-title">Insights</span>
+      <a href="reports.html" class="nav__item">
+        <i class="bi bi-bar-chart-fill"></i><span class="nav__label">Reports</span>
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <a href="settings.html" class="nav__item">
+        <i class="bi bi-gear-fill"></i><span class="nav__label">Settings</span>
+      </a>
+      <a href="#" class="nav__item" id="logoutLink">
+        <i class="bi bi-box-arrow-right"></i><span class="nav__label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN COLUMN ============ -->
+  <div>
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="topbar__icon-btn hide-mobile" data-action="toggle-sidebar" aria-label="Toggle sidebar width">
+          <i class="bi bi-layout-sidebar"></i>
+        </button>
+        <button class="topbar__icon-btn" data-action="toggle-mobile-nav" aria-label="Open menu" style="display:none;">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="topbar__search">
+          <i class="bi bi-search"></i>
+          <input type="search" placeholder="Search shipments, drivers, customers…">
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <button class="topbar__icon-btn" data-action="toggle-theme" aria-label="Toggle theme">
+          <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+        </button>
+        <button class="topbar__icon-btn" aria-label="Notifications">
+          <i class="bi bi-bell-fill"></i>
+          <span class="topbar__badge"></span>
+        </button>
+
+        <div class="profile-menu" style="position:relative;">
+          <button class="topbar__profile" data-action="toggle-profile-menu">
+            <div class="topbar__avatar" id="profileAvatar">--</div>
+            <div class="topbar__profile-meta hide-mobile">
+              <div class="topbar__profile-name" id="profileName">Loading…</div>
+              <div class="topbar__profile-role" id="profileRole">&nbsp;</div>
+            </div>
+            <i class="bi bi-chevron-down text-secondary hide-mobile" style="font-size:12px;"></i>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+    <a href="settings.html">
+        <i class="bi bi-person-circle"></i>
+        My Profile
+    </a>
+
+    <a href="settings.html">
+        <i class="bi bi-gear-fill"></i>
+        Settings
+    </a>
+
+    <a href="#">
+        <i class="bi bi-key-fill"></i>
+        Change Password
+    </a>
+
+    <hr>
+
+    <a href="#" id="logoutDropdown">
+        <i class="bi bi-box-arrow-right"></i>
+        Logout
+    </a>
+</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content">
+      <div class="page-header">
+        <div>
+          <div class="page-header__eyebrow">Overview</div>
+          <h1 id="dashboardGreeting">Loading...</h1>
+          <p id="dashboardDate">
+            Loading today's summary...
+          </p>
+        </div>
+        <div class="flex gap-3">
+          <button class="btn btn--outline"><i class="bi bi-download"></i> Export</button>
+          <button class="btn btn--primary"><i class="bi bi-plus-lg"></i> New Shipment</button>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <section class="grid grid--kpi" style="margin-bottom: var(--space-6);">
+        <div class="card stat-card">
+          <div class="stat-card__top">
+            <span class="stat-card__label">Active Shipments</span>
+            <div class="stat-card__icon" style="background: rgba(37,99,235,0.1); color: var(--color-accent-blue);"><i class="bi bi-box-seam-fill"></i></div>
+          </div>
+          <div class="stat-card__value"><span data-counter="1284">0</span></div>
+          <span class="stat-card__delta stat-card__delta--up"><i class="bi bi-arrow-up-short"></i> 8.2% vs last week</span>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-card__top">
+            <span class="stat-card__label">Fleet Utilization</span>
+            <div class="stat-card__icon" style="background: rgba(249,115,22,0.1); color: var(--color-accent-orange);"><i class="bi bi-truck"></i></div>
+          </div>
+          <div class="stat-card__value"><span data-counter="87.4">0</span>%</div>
+          <span class="stat-card__delta stat-card__delta--up"><i class="bi bi-arrow-up-short"></i> 3.1% vs last week</span>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-card__top">
+            <span class="stat-card__label">On-Time Delivery</span>
+            <div class="stat-card__icon" style="background: rgba(34,197,94,0.1); color: var(--color-success);"><i class="bi bi-check-circle-fill"></i></div>
+          </div>
+          <div class="stat-card__value"><span data-counter="98.2">0</span>%</div>
+          <span class="stat-card__delta stat-card__delta--down"><i class="bi bi-arrow-down-short"></i> 0.4% vs last week</span>
+        </div>
+
+        <div class="card stat-card">
+          <div class="stat-card__top">
+            <span class="stat-card__label">Monthly Revenue</span>
+            <div class="stat-card__icon" style="background: rgba(239,68,68,0.1); color: var(--color-danger);"><i class="bi bi-graph-up-arrow"></i></div>
+          </div>
+          <div class="stat-card__value">$<span data-counter="238900">0</span></div>
+          <span class="stat-card__delta stat-card__delta--up"><i class="bi bi-arrow-up-short"></i> 12.6% vs last month</span>
+        </div>
+      </section>
+
+      <!-- Charts + Map row -->
+      <section class="grid grid--split" style="margin-bottom: var(--space-6);">
+        <div class="card widget-card">
+          <div class="widget-card__header">
+            <h3>Revenue Trend</h3>
+            <div class="dashboard-tabs">
+              <span class="dashboard-tab is-active">6M</span>
+              <span class="dashboard-tab">1Y</span>
+              <span class="dashboard-tab">All</span>
+            </div>
+          </div>
+          <div style="height:260px;"><canvas id="revenueChart"></canvas></div>
+        </div>
+
+        <div class="card widget-card">
+          <div class="widget-card__header">
+            <h3>Shipment Status</h3>
+          </div>
+          <div style="height:200px;"><canvas id="shipmentStatusChart"></canvas></div>
+          <div class="chart-legend" style="margin-top: var(--space-4);">
+            <span class="chart-legend__item"><span class="chart-legend__dot" style="background:#22C55E;"></span>Delivered</span>
+            <span class="chart-legend__item"><span class="chart-legend__dot" style="background:#2563EB;"></span>In transit</span>
+            <span class="chart-legend__item"><span class="chart-legend__dot" style="background:#F59E0B;"></span>Pending</span>
+            <span class="chart-legend__item"><span class="chart-legend__dot" style="background:#EF4444;"></span>Delayed</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Map + Activity row -->
+      <section class="grid grid--split">
+        <div class="card map-card">
+          <div id="fleetMap" class="map-card__map"></div>
+          <div class="map-card__footer">
+            <span><i class="bi bi-truck"></i> 340 vehicles online</span>
+            <a href="vehicles.html" style="color: var(--color-accent-blue); font-weight:600;">View fleet map →</a>
+          </div>
+        </div>
+
+        <div class="card widget-card">
+          <div class="widget-card__header">
+            <h3>Recent Activity</h3>
+          </div>
+          <div class="activity-feed">
+            <div class="activity-item">
+              <div class="activity-item__dot"><i class="bi bi-check2"></i></div>
+              <div>
+                <div class="activity-item__title">Shipment #FF-10482 delivered</div>
+                <div class="activity-item__meta">Quezon City Depot · 12 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-item__dot" style="color: var(--color-accent-orange); background: rgba(249,115,22,0.1);"><i class="bi bi-truck"></i></div>
+              <div>
+                <div class="activity-item__title">Truck 11 assigned to Route B-4</div>
+                <div class="activity-item__meta">Dispatch · 38 min ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-item__dot" style="color: var(--color-warning); background: rgba(245,158,11,0.1);"><i class="bi bi-exclamation-triangle-fill"></i></div>
+              <div>
+                <div class="activity-item__title">Shipment #FF-10390 flagged as delayed</div>
+                <div class="activity-item__meta">Manila South Route · 1 hr ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-item__dot"><i class="bi bi-person-plus-fill"></i></div>
+              <div>
+                <div class="activity-item__title">New driver onboarded — J. Santos</div>
+                <div class="activity-item__meta">HR · 3 hrs ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  const themeIcon = document.getElementById("themeIcon");
+  function syncThemeIcon() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    themeIcon.className = isDark ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+  }
+  document.querySelector("[data-action='toggle-theme']").addEventListener("click", () => {
+    const resolved = document.documentElement.getAttribute("data-theme");
+    FreightFlowTheme.set({ theme: resolved === "dark" ? "light" : "dark" });
+    syncThemeIcon();
+  });
+  syncThemeIcon();
+
+  // ---- Auth guard + profile info ----
+  (async function loadCurrentUser() {
+    try {
+      const { user } = await FreightFlowAPI.get("/auth/me");
+      document.getElementById("profileName").textContent = user.fullName;
+      document.getElementById("profileRole").textContent = user.role;
+      const initials = user.fullName.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
+      document.getElementById("profileAvatar").textContent = initials;
+    } catch (err) {
+      // FreightFlowAPI already redirects to index.html on 401
+    }
+  })();
+
+  document.getElementById("logoutLink").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await FreightFlowAPI.post("/auth/logout", {});
+    window.location.href = "index.html";
+  });
+
+  document.getElementById("logoutDropdown").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await FreightFlowAPI.post("/auth/logout", {});
+    window.location.href = "index.html";
+});
+
+  // ---- Pull real counts from the database where we have them ----
+  (async function loadRealStats() {
+    try {
+      const [{ shipments }, { vehicles }] = await Promise.all([
+        FreightFlowAPI.get("/shipments"),
+        FreightFlowAPI.get("/vehicles")
+      ]);
+      const activeCard = document.querySelector('[data-counter="1284"]');
+      if (activeCard) activeCard.dataset.counter = shipments.length;
+
+      const revenue = shipments.reduce((sum, s) => sum + (s.cost || 0), 0);
+      const revenueCard = document.querySelector('[data-counter="238900"]');
+      if (revenueCard) revenueCard.dataset.counter = revenue;
+
+      // Re-run the counter animation now that real numbers are in place
+      if (typeof animateCounters === "function") animateCounters();
+    } catch (e) { /* charts/KPIs just keep their illustrative defaults */ }
+  })();
+</script>
+</body>
+</html>

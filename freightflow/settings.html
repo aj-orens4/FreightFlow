@@ -1,0 +1,239 @@
+<!--
+  Purpose: User preference settings - fully functional (persisted via localStorage)
+  Author: FreightFlow Engineering
+  Version: 0.1.0
+  Last Updated: 2026-07-05
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings · FreightFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/utilities.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/responsive.css">
+<style>
+  .option-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4) 0; border-bottom: 1px solid var(--surface-border); }
+  .option-row:last-child { border-bottom: none; }
+  .option-row__label { font-weight: var(--fw-medium); }
+  .option-row__desc { font-size: var(--fs-sm); color: var(--text-secondary); margin-top: 2px; }
+  .swatch-row { display: flex; gap: var(--space-3); }
+  .swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; display: grid; place-items: center; }
+  .swatch.is-selected { border-color: var(--text-primary); }
+  .segmented { display: flex; background: var(--color-ink-100); border-radius: var(--radius-full); padding: 3px; }
+  .segmented button { padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); font-size: var(--fs-sm); font-weight: var(--fw-medium); color: var(--text-secondary); }
+  .segmented button.is-active { background: var(--surface-card); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+</style>
+</head>
+<body>
+
+<div class="app-shell" data-sidebar="expanded" data-sidebar-mobile="closed">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-mark">FF</div>
+      <span class="sidebar__brand-name">FreightFlow</span>
+    </div>
+    <nav class="sidebar__nav">
+      <span class="sidebar__section-title">Overview</span>
+      <a href="dashboard.html" class="nav__item"><i class="bi bi-grid-1x2-fill"></i><span class="nav__label">Dashboard</span></a>
+      <span class="sidebar__section-title">Operations</span>
+      <a href="shipments.html" class="nav__item"><i class="bi bi-box-seam-fill"></i><span class="nav__label">Shipments</span></a>
+      <a href="routes.html" class="nav__item"><i class="bi bi-signpost-2-fill"></i><span class="nav__label">Routes</span></a>
+      <a href="schedules.html" class="nav__item"><i class="bi bi-calendar-week-fill"></i><span class="nav__label">Schedules</span></a>
+      <a href="tariffs.html" class="nav__item"><i class="bi bi-calculator-fill"></i><span class="nav__label">Tariffs</span></a>
+      <span class="sidebar__section-title">Resources</span>
+      <a href="vehicles.html" class="nav__item"><i class="bi bi-truck"></i><span class="nav__label">Vehicles</span></a>
+      <a href="drivers.html" class="nav__item"><i class="bi bi-person-badge-fill"></i><span class="nav__label">Drivers</span></a>
+      <a href="customers.html" class="nav__item"><i class="bi bi-people-fill"></i><span class="nav__label">Customers</span></a>
+      <a href="providers.html" class="nav__item"><i class="bi bi-diagram-3-fill"></i><span class="nav__label">Providers</span></a>
+      <span class="sidebar__section-title">Insights</span>
+      <a href="reports.html" class="nav__item"><i class="bi bi-bar-chart-fill"></i><span class="nav__label">Reports</span></a>
+    </nav>
+    <div class="sidebar__footer">
+      <a href="settings.html" class="nav__item is-active"><i class="bi bi-gear-fill"></i><span class="nav__label">Settings</span></a>
+      <a href="#" class="nav__item" id="logoutLink"><i class="bi bi-box-arrow-right"></i><span class="nav__label">Logout</span></a>
+    </div>
+  </aside>
+
+  <div>
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="topbar__icon-btn hide-mobile" data-action="toggle-sidebar" aria-label="Toggle sidebar width"><i class="bi bi-layout-sidebar"></i></button>
+        <div class="topbar__search"><i class="bi bi-search"></i><input type="search" placeholder="Search…"></div>
+      </div>
+      <div class="topbar__actions">
+        <button class="topbar__icon-btn" data-action="toggle-theme" aria-label="Toggle theme"><i class="bi bi-moon-stars-fill" id="themeIcon"></i></button>
+        <div class="profile-menu" style="position:relative;">
+          <button class="topbar__profile" data-action="toggle-profile-menu">
+            <div class="topbar__avatar" id="profileAvatar">--</div>
+            <div class="topbar__profile-meta hide-mobile">
+              <div class="topbar__profile-name" id="profileName">Loading…</div>
+              <div class="topbar__profile-role" id="profileRole">&nbsp;</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-header">
+        <div>
+          <div class="page-header__eyebrow">Account</div>
+          <h1>Settings</h1>
+          <p>Personalize how FreightFlow looks and behaves for you.</p>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns: 1fr; max-width: 640px; gap: var(--space-6);">
+        <div class="card card__body">
+          <h3 class="font-display font-semibold" style="margin-bottom: var(--space-2);">Appearance</h3>
+
+          <div class="option-row">
+            <div>
+              <div class="option-row__label">Theme</div>
+              <div class="option-row__desc">Light, dark, or match your system.</div>
+            </div>
+            <div class="segmented" id="themeSegment">
+              <button data-value="light">Light</button>
+              <button data-value="dark">Dark</button>
+              <button data-value="system">System</button>
+            </div>
+          </div>
+
+          <div class="option-row">
+            <div>
+              <div class="option-row__label">Accent color</div>
+              <div class="option-row__desc">Used for buttons, links, and highlights.</div>
+            </div>
+            <div class="swatch-row" id="accentSwatches">
+              <div class="swatch" data-value="blue" style="background:#2563EB;"></div>
+              <div class="swatch" data-value="green" style="background:#22C55E;"></div>
+              <div class="swatch" data-value="purple" style="background:#7C3AED;"></div>
+              <div class="swatch" data-value="orange" style="background:#F97316;"></div>
+            </div>
+          </div>
+
+          <div class="option-row">
+            <div>
+              <div class="option-row__label">Font size</div>
+              <div class="option-row__desc">Adjusts text size across the whole app.</div>
+            </div>
+            <div class="segmented" id="fontSegment">
+              <button data-value="small">Small</button>
+              <button data-value="medium">Medium</button>
+              <button data-value="large">Large</button>
+            </div>
+          </div>
+
+          <div class="option-row">
+            <div>
+              <div class="option-row__label">Sidebar style</div>
+              <div class="option-row__desc">Expanded shows labels; compact saves space.</div>
+            </div>
+            <div class="segmented" id="sidebarSegment">
+              <button data-value="expanded">Expanded</button>
+              <button data-value="compact">Compact</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card__body">
+          <h3 class="font-display font-semibold" style="margin-bottom: var(--space-2);">Account</h3>
+          <div class="option-row">
+            <div>
+              <div class="option-row__label" id="settingsName">—</div>
+              <div class="option-row__desc" id="settingsEmail">—</div>
+            </div>
+            <span class="badge badge--info" id="settingsRole">—</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const themeIcon = document.getElementById("themeIcon");
+  function syncThemeIcon() {
+    themeIcon.className = document.documentElement.getAttribute("data-theme") === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+  }
+  document.querySelector("[data-action='toggle-theme']").addEventListener("click", () => {
+    const resolved = document.documentElement.getAttribute("data-theme");
+    FreightFlowTheme.set({ theme: resolved === "dark" ? "light" : "dark" });
+    syncThemeIcon();
+    syncControls();
+  });
+
+  (async function loadCurrentUser() {
+    try {
+      const { user } = await FreightFlowAPI.get("/auth/me");
+      document.getElementById("profileName").textContent = user.fullName;
+      document.getElementById("profileRole").textContent = user.role;
+      document.getElementById("profileAvatar").textContent = user.fullName.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
+      document.getElementById("settingsName").textContent = user.fullName;
+      document.getElementById("settingsEmail").textContent = user.email;
+      document.getElementById("settingsRole").textContent = user.role;
+    } catch (e) {}
+  })();
+
+  document.getElementById("logoutLink").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await FreightFlowAPI.post("/auth/logout", {});
+    window.location.href = "index.html";
+  });
+
+  // ---- Preference controls ----
+  function syncControls() {
+    const prefs = FreightFlowTheme.get();
+    document.querySelectorAll("#themeSegment button").forEach(b => b.classList.toggle("is-active", b.dataset.value === prefs.theme));
+    document.querySelectorAll("#accentSwatches .swatch").forEach(s => s.classList.toggle("is-selected", s.dataset.value === prefs.accent));
+    document.querySelectorAll("#fontSegment button").forEach(b => b.classList.toggle("is-active", b.dataset.value === prefs.fontSize));
+    document.querySelectorAll("#sidebarSegment button").forEach(b => b.classList.toggle("is-active", b.dataset.value === prefs.sidebar));
+    syncThemeIcon();
+  }
+
+  document.getElementById("themeSegment").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    FreightFlowTheme.set({ theme: btn.dataset.value });
+    syncControls();
+  });
+
+  document.getElementById("accentSwatches").addEventListener("click", (e) => {
+    const swatch = e.target.closest(".swatch");
+    if (!swatch) return;
+    FreightFlowTheme.set({ accent: swatch.dataset.value });
+    syncControls();
+  });
+
+  document.getElementById("fontSegment").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    FreightFlowTheme.set({ fontSize: btn.dataset.value });
+    syncControls();
+  });
+
+  document.getElementById("sidebarSegment").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    FreightFlowTheme.set({ sidebar: btn.dataset.value });
+    syncControls();
+  });
+
+  syncControls();
+</script>
+</body>
+</html>

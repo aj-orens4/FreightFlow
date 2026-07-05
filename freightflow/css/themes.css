@@ -1,0 +1,37 @@
+/*
+  Purpose: Light / dark / system theme overrides
+  Author: FreightFlow Engineering
+  Version: 0.1.0
+  Last Updated: 2026-07-04
+*/
+
+[data-theme="dark"] {
+  --surface-bg: var(--color-bg-dark);
+  --surface-card: #111C33;
+  --surface-border: rgba(248, 250, 252, 0.08);
+  --surface-glass: rgba(15, 23, 42, 0.75);
+  --surface-glass-border: rgba(248, 250, 252, 0.08);
+
+  --color-ink-100: rgba(248, 250, 252, 0.06);
+  --color-ink-200: rgba(248, 250, 252, 0.12);
+
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+}
+
+[data-theme="dark"] .sidebar {
+  background: #070C18;
+  border-right: 1px solid rgba(248, 250, 252, 0.06);
+}
+
+[data-theme="dark"] .badge--success { background: rgba(34, 197, 94, 0.16); color: #4ade80; }
+[data-theme="dark"] .badge--warning { background: rgba(245, 158, 11, 0.16); color: #fbbf24; }
+[data-theme="dark"] .badge--danger  { background: rgba(239, 68, 68, 0.16); color: #f87171; }
+[data-theme="dark"] .badge--info    { background: rgba(37, 99, 235, 0.2); color: #60a5fa; }
+
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(90deg, rgba(248,250,252,0.05) 25%, rgba(248,250,252,0.1) 37%, rgba(248,250,252,0.05) 63%);
+  background-size: 400% 100%;
+}
+
+[data-theme="dark"] .toast { background: #1E293B; }

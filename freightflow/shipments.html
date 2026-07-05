@@ -1,0 +1,311 @@
+<!--
+  Purpose: Shipments list + create/edit/delete, backed by the real API
+  Author: FreightFlow Engineering
+  Version: 0.1.0
+  Last Updated: 2026-07-05
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipments · FreightFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/utilities.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div class="app-shell" data-sidebar="expanded" data-sidebar-mobile="closed">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <div class="sidebar__brand-mark">FF</div>
+      <span class="sidebar__brand-name">FreightFlow</span>
+    </div>
+    <nav class="sidebar__nav">
+      <span class="sidebar__section-title">Overview</span>
+      <a href="dashboard.html" class="nav__item"><i class="bi bi-grid-1x2-fill"></i><span class="nav__label">Dashboard</span></a>
+      <span class="sidebar__section-title">Operations</span>
+      <a href="shipments.html" class="nav__item is-active"><i class="bi bi-box-seam-fill"></i><span class="nav__label">Shipments</span></a>
+      <a href="routes.html" class="nav__item"><i class="bi bi-signpost-2-fill"></i><span class="nav__label">Routes</span></a>
+      <a href="schedules.html" class="nav__item"><i class="bi bi-calendar-week-fill"></i><span class="nav__label">Schedules</span></a>
+      <a href="tariffs.html" class="nav__item"><i class="bi bi-calculator-fill"></i><span class="nav__label">Tariffs</span></a>
+      <span class="sidebar__section-title">Resources</span>
+      <a href="vehicles.html" class="nav__item"><i class="bi bi-truck"></i><span class="nav__label">Vehicles</span></a>
+      <a href="drivers.html" class="nav__item"><i class="bi bi-person-badge-fill"></i><span class="nav__label">Drivers</span></a>
+      <a href="customers.html" class="nav__item"><i class="bi bi-people-fill"></i><span class="nav__label">Customers</span></a>
+      <a href="providers.html" class="nav__item"><i class="bi bi-diagram-3-fill"></i><span class="nav__label">Providers</span></a>
+      <span class="sidebar__section-title">Insights</span>
+      <a href="reports.html" class="nav__item"><i class="bi bi-bar-chart-fill"></i><span class="nav__label">Reports</span></a>
+    </nav>
+    <div class="sidebar__footer">
+      <a href="settings.html" class="nav__item"><i class="bi bi-gear-fill"></i><span class="nav__label">Settings</span></a>
+      <a href="#" class="nav__item" id="logoutLink"><i class="bi bi-box-arrow-right"></i><span class="nav__label">Logout</span></a>
+    </div>
+  </aside>
+
+  <div>
+    <header class="topbar">
+      <div class="flex items-center gap-3">
+        <button class="topbar__icon-btn hide-mobile" data-action="toggle-sidebar" aria-label="Toggle sidebar width"><i class="bi bi-layout-sidebar"></i></button>
+        <div class="topbar__search"><i class="bi bi-search"></i><input type="search" id="searchInput" placeholder="Search shipments…"></div>
+      </div>
+      <div class="topbar__actions">
+        <button class="topbar__icon-btn" data-action="toggle-theme" aria-label="Toggle theme"><i class="bi bi-moon-stars-fill" id="themeIcon"></i></button>
+        <div class="profile-menu" style="position:relative;">
+          <button class="topbar__profile" data-action="toggle-profile-menu">
+            <div class="topbar__avatar" id="profileAvatar">--</div>
+            <div class="topbar__profile-meta hide-mobile">
+              <div class="topbar__profile-name" id="profileName">Loading…</div>
+              <div class="topbar__profile-role" id="profileRole">&nbsp;</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-header">
+        <div>
+          <div class="page-header__eyebrow">Operations</div>
+          <h1>Shipments</h1>
+          <p>Every shipment, its route, and its current status.</p>
+        </div>
+        <button class="btn btn--primary" id="openAddModal"><i class="bi bi-plus-lg"></i> New Shipment</button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Reference</th><th>Customer</th><th>Route</th><th>Vehicle / Driver</th><th>Weight</th><th>Cost</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="8"><div class="skeleton" style="height:20px;"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-state__icon"><i class="bi bi-box-seam"></i></div>
+          <h3>No shipments yet</h3>
+          <p>Create your first shipment to start tracking it end to end.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal__header">
+      <h3 id="modalTitle">New Shipment</h3>
+      <button class="modal__close" id="modalClose"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <form id="shipmentForm">
+      <div class="modal__body">
+        <input type="hidden" id="shipmentId">
+        <div class="field"><label class="static" for="origin">Origin</label><input type="text" id="origin" required></div>
+        <div class="field"><label class="static" for="destination">Destination</label><input type="text" id="destination" required></div>
+        <div class="field">
+          <label class="static" for="customerId">Customer</label>
+          <select id="customerId"><option value="">— None —</option></select>
+        </div>
+        <div class="field">
+          <label class="static" for="vehicleId">Vehicle</label>
+          <select id="vehicleId"><option value="">— Unassigned —</option></select>
+        </div>
+        <div class="field">
+          <label class="static" for="driverId">Driver</label>
+          <select id="driverId"><option value="">— Unassigned —</option></select>
+        </div>
+        <div class="field"><label class="static" for="weightKg">Weight (kg)</label><input type="number" id="weightKg" min="0"></div>
+        <div class="field"><label class="static" for="cost">Cost ($)</label><input type="number" id="cost" min="0" step="0.01"></div>
+        <div class="field">
+          <label class="static" for="status">Status</label>
+          <select id="status">
+            <option value="Pending">Pending</option>
+            <option value="In Transit">In Transit</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Delayed">Delayed</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--secondary" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn btn--primary" id="modalSubmit">Save Shipment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+  const themeIcon = document.getElementById("themeIcon");
+  function syncThemeIcon() {
+    themeIcon.className = document.documentElement.getAttribute("data-theme") === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
+  }
+  document.querySelector("[data-action='toggle-theme']").addEventListener("click", () => {
+    const resolved = document.documentElement.getAttribute("data-theme");
+    FreightFlowTheme.set({ theme: resolved === "dark" ? "light" : "dark" });
+    syncThemeIcon();
+  });
+  syncThemeIcon();
+
+  (async function loadCurrentUser() {
+    try {
+      const { user } = await FreightFlowAPI.get("/auth/me");
+      document.getElementById("profileName").textContent = user.fullName;
+      document.getElementById("profileRole").textContent = user.role;
+      document.getElementById("profileAvatar").textContent = user.fullName.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    } catch (e) {}
+  })();
+
+  document.getElementById("logoutLink").addEventListener("click", async (e) => {
+    e.preventDefault();
+    await FreightFlowAPI.post("/auth/logout", {});
+    window.location.href = "index.html";
+  });
+
+  function statusBadge(status) {
+    const map = { "Pending": "warning", "In Transit": "info", "Delivered": "success", "Delayed": "danger" };
+    return `<span class="badge badge--${map[status] || "neutral"}">${status}</span>`;
+  }
+
+  let shipments = [];
+  const tableBody = document.getElementById("tableBody");
+  const emptyState = document.getElementById("emptyState");
+  const overlay = document.getElementById("modalOverlay");
+  const form = document.getElementById("shipmentForm");
+  const customerSelect = document.getElementById("customerId");
+  const vehicleSelect = document.getElementById("vehicleId");
+  const driverSelect = document.getElementById("driverId");
+
+  function render(list) {
+    if (list.length === 0) { tableBody.innerHTML = ""; emptyState.classList.remove("hidden"); return; }
+    emptyState.classList.add("hidden");
+    tableBody.innerHTML = list.map(s => `
+      <tr>
+        <td class="font-semibold">${s.reference}</td>
+        <td class="text-secondary">${s.customer_name || "—"}</td>
+        <td class="text-secondary text-sm">${s.origin} → ${s.destination}</td>
+        <td class="text-secondary text-sm">${s.vehicle_plate || "—"} ${s.driver_name ? "· " + s.driver_name : ""}</td>
+        <td class="text-secondary">${s.weight_kg ? s.weight_kg + " kg" : "—"}</td>
+        <td class="text-secondary">${FreightFlowHelpers.formatCurrency(s.cost || 0)}</td>
+        <td>${statusBadge(s.status)}</td>
+        <td>
+          <div class="row-actions">
+            <button data-edit="${s.id}" aria-label="Edit"><i class="bi bi-pencil"></i></button>
+            <button data-delete="${s.id}" class="danger" aria-label="Delete"><i class="bi bi-trash"></i></button>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  async function loadDropdowns() {
+    const [{ customers }, { vehicles }, { drivers }] = await Promise.all([
+      FreightFlowAPI.get("/customers"),
+      FreightFlowAPI.get("/vehicles"),
+      FreightFlowAPI.get("/drivers")
+    ]);
+    customerSelect.innerHTML = '<option value="">— None —</option>' + customers.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    vehicleSelect.innerHTML = '<option value="">— Unassigned —</option>' + vehicles.map(v => `<option value="${v.id}">${v.plate_no}</option>`).join("");
+    driverSelect.innerHTML = '<option value="">— Unassigned —</option>' + drivers.map(d => `<option value="${d.id}">${d.name}</option>`).join("");
+  }
+
+  async function loadShipments() {
+    const { shipments: data } = await FreightFlowAPI.get("/shipments");
+    shipments = data;
+    render(shipments);
+  }
+
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase();
+    render(shipments.filter(s =>
+      s.reference.toLowerCase().includes(q) ||
+      s.origin.toLowerCase().includes(q) ||
+      s.destination.toLowerCase().includes(q) ||
+      (s.customer_name || "").toLowerCase().includes(q)
+    ));
+  });
+
+  function openModal(shipment = null) {
+    document.getElementById("modalTitle").textContent = shipment ? "Edit Shipment" : "New Shipment";
+    document.getElementById("shipmentId").value = shipment?.id || "";
+    document.getElementById("origin").value = shipment?.origin || "";
+    document.getElementById("destination").value = shipment?.destination || "";
+    customerSelect.value = shipment?.customer_id || "";
+    vehicleSelect.value = shipment?.vehicle_id || "";
+    driverSelect.value = shipment?.driver_id || "";
+    document.getElementById("weightKg").value = shipment?.weight_kg || "";
+    document.getElementById("cost").value = shipment?.cost || "";
+    document.getElementById("status").value = shipment?.status || "Pending";
+    overlay.classList.add("is-open");
+  }
+  function closeModal() { overlay.classList.remove("is-open"); form.reset(); }
+
+  document.getElementById("openAddModal").addEventListener("click", () => openModal());
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalCancel").addEventListener("click", closeModal);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) closeModal(); });
+
+  tableBody.addEventListener("click", async (e) => {
+    const editId = e.target.closest("[data-edit]")?.dataset.edit;
+    const deleteId = e.target.closest("[data-delete]")?.dataset.delete;
+    if (editId) openModal(shipments.find(s => s.id == editId));
+    if (deleteId) {
+      if (!confirm("Delete this shipment? This cannot be undone.")) return;
+      try {
+        await FreightFlowAPI.del(`/shipments/${deleteId}`);
+        FreightFlowHelpers.toast("Shipment deleted.", { type: "success" });
+        loadShipments();
+      } catch (err) { FreightFlowHelpers.toast(err.message, { type: "danger" }); }
+    }
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("shipmentId").value;
+    const payload = {
+      origin: document.getElementById("origin").value.trim(),
+      destination: document.getElementById("destination").value.trim(),
+      customerId: customerSelect.value ? Number(customerSelect.value) : null,
+      vehicleId: vehicleSelect.value ? Number(vehicleSelect.value) : null,
+      driverId: driverSelect.value ? Number(driverSelect.value) : null,
+      weightKg: document.getElementById("weightKg").value ? Number(document.getElementById("weightKg").value) : null,
+      cost: document.getElementById("cost").value ? Number(document.getElementById("cost").value) : 0,
+      status: document.getElementById("status").value
+    };
+    if (!payload.origin || !payload.destination) {
+      FreightFlowHelpers.toast("Origin and destination are required.", { type: "warning" });
+      return;
+    }
+
+    try {
+      if (id) {
+        await FreightFlowAPI.put(`/shipments/${id}`, payload);
+        FreightFlowHelpers.toast("Shipment updated.", { type: "success" });
+      } else {
+        await FreightFlowAPI.post("/shipments", payload);
+        FreightFlowHelpers.toast("Shipment created.", { type: "success" });
+      }
+      closeModal();
+      loadShipments();
+    } catch (err) { FreightFlowHelpers.toast(err.message, { type: "danger" }); }
+  });
+
+  loadDropdowns().then(loadShipments);
+</script>
+</body>
+</html>

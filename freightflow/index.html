@@ -1,0 +1,142 @@
+<!--
+  Purpose: FreightFlow sign-in page
+  Author: FreightFlow Engineering
+  Version: 0.1.0
+  Last Updated: 2026-07-04
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · FreightFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/utilities.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<main class="auth">
+  <!-- Brand / storytelling panel -->
+  <section class="auth__panel" aria-hidden="true">
+    <div class="auth__brand">
+      <div class="sidebar__brand-mark">FF</div>
+      <span class="sidebar__brand-name" style="opacity:1;">FreightFlow</span>
+    </div>
+
+    <h1 class="auth__headline">Every shipment.<br>Every vehicle.<br><span>One command center.</span></h1>
+
+    <div class="auth__stats">
+      <div>
+        <div class="auth__stat-value">12,480</div>
+        <div class="auth__stat-label">Shipments tracked / mo</div>
+      </div>
+      <div>
+        <div class="auth__stat-value">98.2%</div>
+        <div class="auth__stat-label">On-time delivery</div>
+      </div>
+      <div>
+        <div class="auth__stat-value">340</div>
+        <div class="auth__stat-label">Vehicles online</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form panel -->
+  <section class="auth__form-side">
+    <div class="auth__card fade-in">
+      <h1>Welcome back</h1>
+      <p class="auth__sub">Sign in to your FreightFlow workspace.</p>
+
+      <form id="loginForm" novalidate>
+        <div class="field" id="emailField">
+          <input type="email" id="email" placeholder=" " autocomplete="username" required>
+          <label for="email">Work email</label>
+          <p class="field__error">Enter a valid email address.</p>
+        </div>
+
+        <div class="field" id="passwordField">
+          <input type="password" id="password" placeholder=" " autocomplete="current-password" required>
+          <label for="password">Password</label>
+          <button type="button" class="field__toggle-visibility" data-action="toggle-password" aria-label="Show password">
+            <i class="bi bi-eye"></i>
+          </button>
+          <p class="field__error">Password must be at least 8 characters.</p>
+        </div>
+
+        <div class="flex items-center justify-between" style="margin-bottom: var(--space-6);">
+          <label class="flex items-center gap-2 text-sm text-secondary">
+            <input type="checkbox" id="remember" style="width:auto;">
+            Remember me
+          </label>
+          <a href="#" class="text-sm font-semibold" style="color: var(--color-accent-blue);">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn--primary w-full" id="loginSubmit">
+          Sign in
+        </button>
+      </form>
+
+      <p class="auth__footer-note">Don't have a workspace? <a href="register.html" style="color: var(--color-accent-blue); font-weight:600;">Create one</a></p>
+    </div>
+  </section>
+</main>
+
+<script src="js/theme.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/api.js"></script>
+<script>
+  const form = document.getElementById("loginForm");
+  const emailField = document.getElementById("emailField");
+  const passwordField = document.getElementById("passwordField");
+  const toggleBtn = document.querySelector("[data-action='toggle-password']");
+  const passwordInput = document.getElementById("password");
+  const submitBtn = document.getElementById("loginSubmit");
+
+  toggleBtn.addEventListener("click", () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    toggleBtn.innerHTML = isPassword ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    const email = document.getElementById("email").value.trim();
+    if (!FreightFlowHelpers.validateEmail(email)) {
+      FreightFlowHelpers.setFieldError(emailField, "Enter a valid email address.");
+      valid = false;
+    } else {
+      FreightFlowHelpers.clearFieldError(emailField);
+    }
+
+    if (passwordInput.value.length < 8) {
+      FreightFlowHelpers.setFieldError(passwordField, "Password must be at least 8 characters.");
+      valid = false;
+    } else {
+      FreightFlowHelpers.clearFieldError(passwordField);
+    }
+
+    if (!valid) return;
+
+    submitBtn.classList.add("btn--loading");
+    try {
+      await FreightFlowAPI.post("/auth/login", { email, password: passwordInput.value });
+      FreightFlowHelpers.toast("Signed in successfully. Redirecting…", { type: "success" });
+      setTimeout(() => (window.location.href = "dashboard.html"), 500);
+    } catch (err) {
+      submitBtn.classList.remove("btn--loading");
+      FreightFlowHelpers.toast(err.message, { type: "danger" });
+    }
+  });
+</script>
+</body>
+</html>

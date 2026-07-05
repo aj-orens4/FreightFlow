@@ -1,0 +1,61 @@
+/*
+  Purpose: Dashboard-specific widget styles
+  Author: FreightFlow Engineering
+  Version: 0.1.0
+  Last Updated: 2026-07-04
+*/
+
+.widget-card {
+  padding: var(--space-6);
+}
+
+.widget-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.widget-card__header h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+}
+
+.map-card { padding: 0; overflow: hidden; }
+.map-card__map { height: 340px; width: 100%; background: var(--color-ink-100); }
+.map-card__footer {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--surface-border);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.activity-feed { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.activity-item { display: flex; gap: var(--space-3); align-items: flex-start; }
+
+.activity-item__dot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center; flex: 0 0 auto;
+  background: var(--color-ink-100); color: var(--color-accent-blue);
+}
+
+.activity-item__title { font-size: var(--fs-sm); font-weight: var(--fw-medium); }
+.activity-item__meta { font-size: var(--fs-xs); color: var(--text-secondary); }
+
+.chart-legend { display: flex; gap: var(--space-4); flex-wrap: wrap; }
+.chart-legend__item { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); color: var(--text-secondary); }
+.chart-legend__dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.dashboard-tabs { display: flex; gap: var(--space-2); }
+.dashboard-tab {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+.dashboard-tab.is-active { background: var(--color-accent-blue); color: #fff; }
